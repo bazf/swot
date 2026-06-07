@@ -44,6 +44,13 @@ describe('computeVoteStats', () => {
     expect(s.themes.map((t) => t.count)).toEqual([5, 3, 2]);
   });
 
+  it('omits a theme’s cat when no merged thought was sorted (no undefined for Firebase)', () => {
+    const s = computeVoteStats([msg('Гранти'), msg('гранти')]);
+    expect(s.themes).toHaveLength(1);
+    expect('cat' in s.themes[0]).toBe(false);
+    expect(Object.values(s.themes[0])).not.toContain(undefined);
+  });
+
   it('returns empty stats for no input', () => {
     const s = computeVoteStats([]);
     expect(s).toEqual({ total: 0, unique: 0, byCategory: { str: 0, wek: 0, opp: 0, thr: 0 }, themes: [] });
