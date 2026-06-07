@@ -7,6 +7,7 @@ import type {
   Cluster,
   FinalReport,
   SwotMap,
+  VoteStats,
 } from '../state/types';
 
 /** 4 cosmic categories = 4 SWOT quadrants. */
@@ -102,6 +103,20 @@ export const STAR_MAP: SwotMap = {
   ],
 };
 
+/** Sample vote tally (demo + graceful fallback) — proportions and similar votes. */
+export const SAMPLE_STATS: VoteStats = {
+  total: 50,
+  unique: 21,
+  byCategory: { str: 18, wek: 12, opp: 11, thr: 9 },
+  themes: [
+    { text: 'Сильна команда вчителів-предметників', count: 6, cat: 'str' },
+    { text: 'Застаріле обладнання в кабінетах', count: 5, cat: 'wek' },
+    { text: 'Грант на STEM-лабораторію', count: 4, cat: 'opp' },
+    { text: 'Відтік учнів до міських шкіл', count: 4, cat: 'thr' },
+    { text: 'Підтримка з боку батьків та громади', count: 3, cat: 'str' },
+  ],
+};
+
 /** TOP-3 priorities + synthesized-voice conclusion. */
 export const FINAL_REPORT: FinalReport = {
   priorities: [
@@ -126,6 +141,7 @@ export const FINAL_REPORT: FinalReport = {
     'Водночас застаріла інфраструктура й перевантаженість звітністю стримують розвиток. ' +
     'Гранти, партнерства та медіацентр відкривають нові орбіти, тож фокус наступного року — ' +
     'оновлення кабінетів, запуск STEM-лабораторії та менторство, з увагою до безпеки й добробуту команди.',
+  stats: SAMPLE_STATS,
 };
 
 /** Critical mass of ideas. */

@@ -6,6 +6,7 @@ import { Asteroid, Draggable, GalaxyCore, Planet, Starfield } from '../cosmos';
 import { BoardHUD } from './BoardHUD';
 import { BoardZones } from './BoardZones';
 import { CriticalBanner } from './CriticalBanner';
+import { FinalizingOverlay } from './FinalizingOverlay';
 import { StartScreen } from './StartScreen';
 import { zoneForPoint } from './zones';
 
@@ -16,12 +17,14 @@ interface MultiboardProps {
   cycle: number;
   clusters: Cluster[];
   link: string;
+  /** The finale is being synthesized → show the big board indicator. */
+  finalizing?: boolean;
   onStart: () => void;
   onSwipe: () => void;
   onAssign: (idea: Idea, cat: CategoryKey) => void;
 }
 
-export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart, onSwipe, onAssign }: MultiboardProps) {
+export function Multiboard({ phase, ideas, count, cycle, clusters, link, finalizing, onStart, onSwipe, onAssign }: MultiboardProps) {
   const crit = phase === 'critical';
   const showCore = phase === 'collecting' || phase === 'critical';
   const showIdeas = phase === 'collecting' || phase === 'critical';
@@ -89,6 +92,8 @@ export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart
           </div>
         </div>
       )}
+
+      {finalizing && <FinalizingOverlay />}
     </div>
   );
 }

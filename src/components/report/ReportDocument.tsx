@@ -2,6 +2,7 @@
 
 import logo from '../../assets/logo.png';
 import type { FinalReport, SwotMap } from '../../state/types';
+import { ReportStats } from './ReportStats';
 import { SwotCell } from './SwotCell';
 
 interface ReportDocumentProps {
@@ -125,6 +126,8 @@ export function ReportDocument({ map, report }: ReportDocumentProps) {
             </ul>
           </>
         )}
+
+        {report.stats && <ReportStats stats={report.stats} />}
 
         <div style={{ padding: '12px 14px', borderRadius: 8, background: '#fbf6e8', border: '1px solid #f0e2bf' }}>
           <div
