@@ -19,11 +19,14 @@ export interface Category {
 /** Phases of the multiboard, mapped to the brief's app_state. */
 export type Phase = 'start' | 'collecting' | 'critical' | 'clusters' | 'starmap';
 
-/** A teacher's thought, rendered as a drifting asteroid. */
+/** A teacher's thought, rendered as a drifting asteroid.
+   `cat` is undefined until the moderator sorts it into a zone (or the AI groups it). */
 export interface Idea {
   id: number;
-  cat: CategoryKey;
+  cat?: CategoryKey;
   text: string;
+  /** Live Firebase message key (for category write-back). */
+  key?: string;
   /** Spawn coordinates inside the 1280×720 board. */
   x: number;
   y: number;
@@ -32,9 +35,10 @@ export interface Idea {
   fl: number;
 }
 
-/** Raw message as stored in Firebase `/messages`. */
+/** Raw message as stored in Firebase `/messages`. Teachers don't categorize;
+   `cat` is set only if the moderator sorts the thought into a zone. */
 export interface Message {
-  cat: CategoryKey;
+  cat?: CategoryKey;
   text: string;
   ts: number;
 }
@@ -86,10 +90,14 @@ export interface MissionApi {
   /** AI request in flight (board only). */
   busy: boolean;
   start: () => void;
-  addIdea: (cat?: CategoryKey, text?: string) => void;
+  addIdea: (text?: string) => void;
+  /** Moderator manually sorts a thought into a SWOT zone. */
+  assignCategory: (idea: Idea, cat: CategoryKey) => void;
   swipe: () => void;
   continueCycle: () => void;
   finish: () => void;
+  /** Wrap up immediately from any phase (cluster current thoughts, then finalize). */
+  finishNow: () => void;
   reset: () => void;
   jump: (phase: Phase) => void;
 }

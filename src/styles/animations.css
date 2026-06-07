@@ -108,3 +108,31 @@
     transform: translate(-60px, -40px);
   }
 }
+
+/* Teacher "launch to space" feedback */
+@keyframes rocket-launch {
+  0% {
+    transform: translateY(0) scale(1) rotate(-6deg);
+    opacity: 1;
+  }
+  15% {
+    transform: translateY(8px) scale(0.94) rotate(-6deg);
+  }
+  100% {
+    transform: translateY(-380px) scale(1.15) rotate(-6deg);
+    opacity: 0;
+  }
+}
+@keyframes rocket-smoke {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.4);
+  }
+  30% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(26px) scale(1.7);
+  }
+}

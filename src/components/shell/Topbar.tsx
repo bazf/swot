@@ -3,9 +3,9 @@
 import { Fragment } from 'react';
 import logo from '../../assets/logo.png';
 import type { Phase, View } from '../../state/types';
+import type { Theme } from '../../state/useTheme';
+import { ThemeToggle } from '../common/ThemeToggle';
 import { PHASES } from './phases';
-
-type Theme = 'dark' | 'light';
 
 interface TopbarProps {
   phase: Phase;
@@ -95,26 +95,7 @@ export function Topbar({ phase, view, setView, jump, theme, setTheme }: TopbarPr
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <button
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          title={theme === 'light' ? 'Темна тема' : 'Світла тема'}
-          aria-label="Перемкнути тему"
-          style={{
-            cursor: 'pointer',
-            border: '1px solid var(--glass-brd)',
-            width: 38,
-            height: 38,
-            borderRadius: 999,
-            background: 'var(--surface)',
-            color: 'var(--ink)',
-            fontSize: 16,
-            display: 'grid',
-            placeItems: 'center',
-            transition: 'all .2s',
-          }}
-        >
-          {theme === 'light' ? '🌙' : '☀️'}
-        </button>
+        <ThemeToggle theme={theme} onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
 
         <div style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 999, background: 'var(--surface)', border: '1px solid var(--glass-brd)' }}>
           {([['board', '🖥️ Мультиборд'], ['phone', '📱 Телефон']] as [View, string][]).map(([k, l]) => (

@@ -37,6 +37,7 @@ interface DirectorProps {
   swipe: () => void;
   continueCycle: () => void;
   finish: () => void;
+  finishNow?: () => void;
   reset: () => void;
 }
 
@@ -82,13 +83,25 @@ export function Director(p: DirectorProps) {
           <span style={{ fontSize: 12, color: 'var(--ink-dim)' }}>
             {count}/{THRESHOLD} до критичної маси
           </span>
+          {p.finishNow && (
+            <Ctrl disabled={busy} onClick={p.finishNow}>
+              {busy ? '🛰️ Аналіз…' : '🏁 Завершити зараз'}
+            </Ctrl>
+          )}
         </>
       )}
 
       {phase === 'critical' && (
-        <Ctrl gold disabled={busy} onClick={p.swipe}>
-          {busy ? '🛰️ ШІ-синтез…' : '↑ Свайп ядра → ШІ-синтез'}
-        </Ctrl>
+        <>
+          <Ctrl gold disabled={busy} onClick={p.swipe}>
+            {busy ? '🛰️ ШІ-синтез…' : '↑ Свайп ядра → ШІ-синтез'}
+          </Ctrl>
+          {p.finishNow && (
+            <Ctrl disabled={busy} onClick={p.finishNow}>
+              🏁 Завершити зараз
+            </Ctrl>
+          )}
+        </>
       )}
 
       {phase === 'clusters' && (

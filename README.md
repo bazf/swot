@@ -11,7 +11,7 @@ Built from a Claude Design prototype + a detailed product brief. Live site:
 | Phase | What happens |
 | --- | --- |
 | **Старт** | Cosmic start screen, teachers join via link/QR |
-| **Накопичення** | Anonymous thoughts drift in as ⭐🕳🪐☄ asteroids around the logo core |
+| **Накопичення** | Anonymous thoughts drift in as neutral "stardust"; the moderator can drag them into 4 colour zones, or let the AI sort them |
 | **Критична маса** (40) | Core pulses crimson — moderator swipes it to trigger AI synthesis |
 | **Кластери** | AI groups thoughts into planet-diagrams; cycle repeats |
 | **Зоряна карта** | 4 SWOT constellations + TOP-3 priority orbit + AI voice + PDF report |

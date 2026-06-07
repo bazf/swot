@@ -4,10 +4,12 @@ import { LINK } from '../../data/catalog';
 import type { MissionService } from '../../lib/firebase';
 import type { OpenRouterOptions } from '../../lib/openrouter';
 import { useLiveMission } from '../../state/useLiveMission';
+import { themeClass, useTheme } from '../../state/useTheme';
 import { Multiboard } from '../board';
-import { StarMap } from '../starmap';
+import { ThemeToggle } from '../common/ThemeToggle';
 import { Director } from '../shell/Director';
 import { FitStage } from '../shell/FitStage';
+import { StarMap } from '../starmap';
 
 interface LiveBoardProps {
   service: MissionService;
@@ -16,9 +18,11 @@ interface LiveBoardProps {
 
 export function LiveBoard({ service, orOpts }: LiveBoardProps) {
   const m = useLiveMission(service, 'board', orOpts);
+  const { theme, toggle } = useTheme('dark');
   return (
-    <div className="app-root" style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column' }}>
+    <div className={themeClass(theme)} style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column' }}>
       <div className="cosmos-bg" style={{ opacity: 0.5 }} />
+      <ThemeToggle theme={theme} onToggle={toggle} style={{ position: 'absolute', top: 14, right: 18, zIndex: 60 }} />
       <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
         <FitStage w={1280} h={720}>
           <div
@@ -43,6 +47,7 @@ export function LiveBoard({ service, orOpts }: LiveBoardProps) {
                 link={LINK}
                 onStart={m.start}
                 onSwipe={m.swipe}
+                onAssign={m.assignCategory}
               />
             )}
           </div>
@@ -57,6 +62,7 @@ export function LiveBoard({ service, orOpts }: LiveBoardProps) {
         swipe={m.swipe}
         continueCycle={m.continueCycle}
         finish={m.finish}
+        finishNow={m.finishNow}
         reset={m.reset}
       />
     </div>

@@ -34,7 +34,7 @@ export interface AppStateDoc {
 
 export interface MessageDoc {
   id: string;
-  cat: CategoryKey;
+  cat?: CategoryKey;
   text: string;
   ts: number;
 }
@@ -45,7 +45,8 @@ export interface MissionService {
   onMessages(cb: (msgs: MessageDoc[]) => void): Unsubscribe;
   onClusters(cb: (c: Cluster[]) => void): Unsubscribe;
   onFinalReport(cb: (r: MissionFinalReport | null) => void): Unsubscribe;
-  sendMessage(cat: CategoryKey, text: string): Promise<void>;
+  sendMessage(text: string): Promise<void>;
+  setMessageCat(key: string, cat: CategoryKey): Promise<void>;
   setAppState(patch: Partial<AppStateDoc>): Promise<void>;
   setClusters(clusters: Cluster[]): Promise<void>;
   setFinalReport(report: MissionFinalReport): Promise<void>;
@@ -89,8 +90,11 @@ export function createFirebaseService(config: AppConfig, sessionId: string): Mis
     onFinalReport: (cb) =>
       onValue(finalRef, (snap) => cb((snap.val() as MissionFinalReport) ?? null)),
 
-    sendMessage: async (cat, text) => {
-      await push(messagesRef, { cat, text, ts: Date.now() });
+    sendMessage: async (text) => {
+      await push(messagesRef, { text, ts: Date.now() });
+    },
+    setMessageCat: async (key, cat) => {
+      await update(ref(db, `${base}/messages/${key}`), { cat });
     },
     setAppState: async (patch) => {
       await update(appStateRef, { ...patch, updatedAt: Date.now() });

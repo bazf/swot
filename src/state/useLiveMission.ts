@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FINAL_REPORT, STAR_MAP, THRESHOLD } from '../data/catalog';
 import type { AppStateDoc, MessageDoc, MissionService } from '../lib/firebase';
 import { clusterIdeas, finalAnalysis, type OpenRouterOptions } from '../lib/openrouter';
-import type { Cluster, Idea, MissionApi, MissionFinalReport, Phase, Role } from './types';
+import type { CategoryKey, Cluster, Idea, MissionApi, MissionFinalReport, Phase, Role } from './types';
 
 function hashStr(s: string): number {
   let h = 2166136261;
@@ -24,6 +24,8 @@ function posFromId(id: string): { x: number; y: number } {
   const y = 360 + Math.sin(ang) * rad * 0.72 - 22;
   return { x: Math.max(18, Math.min(1075, x)), y: Math.max(82, Math.min(612, y)) };
 }
+
+const toClusterInput = (msgs: MessageDoc[]) => msgs.map((m) => ({ cat: m.cat, text: m.text, ts: m.ts }));
 
 export function useLiveMission(service: MissionService, role: Role, orOpts: OpenRouterOptions): MissionApi {
   const [appState, setAppState] = useState<AppStateDoc | null>(null);
@@ -62,6 +64,7 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
     () =>
       messages.slice(-THRESHOLD).map((m, i) => ({
         id: i + 1,
+        key: m.id,
         cat: m.cat,
         text: m.text,
         ...posFromId(m.id || String(i)),
@@ -76,8 +79,15 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
   }, [service]);
 
   const addIdea = useCallback(
-    (cat?: string, text?: string) => {
-      if (cat && text) void service.sendMessage(cat as Cluster['cat'], text);
+    (text?: string) => {
+      if (text) void service.sendMessage(text);
+    },
+    [service],
+  );
+
+  const assignCategory = useCallback(
+    (idea: Idea, cat: CategoryKey) => {
+      if (idea.key) void service.setMessageCat(idea.key, cat);
     },
     [service],
   );
@@ -86,10 +96,7 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
     setBusy(true);
     try {
       const msgs = await service.getMessagesOnce();
-      const cl = await clusterIdeas(
-        msgs.map((m) => ({ cat: m.cat, text: m.text, ts: m.ts })),
-        orOpts,
-      );
+      const cl = await clusterIdeas(toClusterInput(msgs), orOpts);
       await service.setClusters(cl);
       await service.clearMessages();
       await service.setAppState({ phase: 'clusters', count: 0, cycle: cycle + 1 });
@@ -102,16 +109,40 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
     void service.setAppState({ phase: 'collecting', count: 0 });
   }, [service]);
 
+  const finalizeFrom = useCallback(
+    async (cl: Cluster[]) => {
+      const report = await finalAnalysis(cl, orOpts);
+      await service.setFinalReport(report);
+      await service.setAppState({ phase: 'starmap' });
+    },
+    [service, orOpts],
+  );
+
   const finish = useCallback(async () => {
     setBusy(true);
     try {
-      const report = await finalAnalysis(clusters, orOpts);
-      await service.setFinalReport(report);
-      await service.setAppState({ phase: 'starmap' });
+      await finalizeFrom(clusters);
     } finally {
       setBusy(false);
     }
-  }, [service, orOpts, clusters]);
+  }, [finalizeFrom, clusters]);
+
+  // Wrap up from any phase: cluster whatever raw thoughts remain, then finalize.
+  const finishNow = useCallback(async () => {
+    setBusy(true);
+    try {
+      const msgs = await service.getMessagesOnce();
+      let cl = clusters;
+      if (msgs.length) {
+        cl = await clusterIdeas(toClusterInput(msgs), orOpts);
+        await service.setClusters(cl);
+        await service.clearMessages();
+      }
+      await finalizeFrom(cl);
+    } finally {
+      setBusy(false);
+    }
+  }, [service, orOpts, clusters, finalizeFrom]);
 
   const reset = useCallback(() => {
     void service.resetMission();
@@ -134,9 +165,11 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
     busy,
     start,
     addIdea,
+    assignCategory,
     swipe,
     continueCycle,
     finish,
+    finishNow,
     reset,
     jump: () => {},
   };

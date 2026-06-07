@@ -11,7 +11,7 @@ describe('useDemoMission', () => {
     expect(result.current.phase).toBe('collecting');
 
     act(() => {
-      for (let i = 0; i < THRESHOLD; i++) result.current.addIdea('str', 'думка');
+      for (let i = 0; i < THRESHOLD; i++) result.current.addIdea('думка');
     });
     expect(result.current.count).toBe(THRESHOLD);
     expect(result.current.phase).toBe('critical');

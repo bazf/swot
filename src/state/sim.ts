@@ -1,7 +1,11 @@
-/* sim.ts — demo-mode idea generation + phase seeding (mirrors the prototype). */
+/* sim.ts — demo-mode idea generation + phase seeding (mirrors the prototype).
+   Ideas are category-less "stardust" — they gain a category only when the
+   moderator drags them into a zone (or the AI groups them). */
 
 import { CAT_ORDER, IDEA_POOL, THRESHOLD } from '../data/catalog';
-import type { CategoryKey, Idea } from './types';
+import type { Idea } from './types';
+
+const ALL_TEXTS = CAT_ORDER.flatMap((k) => IDEA_POOL[k]);
 
 /** Random spawn position inside the 1280×720 board, ringed around the core. */
 export function spawnPos(): { x: number; y: number } {
@@ -14,18 +18,15 @@ export function spawnPos(): { x: number; y: number } {
   return { x: Math.max(18, Math.min(1075, x)), y: Math.max(82, Math.min(612, y)) };
 }
 
-/** Pick a random sample thought (optionally constrained to a category). */
-export function randIdeaText(cat?: CategoryKey): { cat: CategoryKey; text: string } {
-  const c = cat ?? CAT_ORDER[Math.floor(Math.random() * CAT_ORDER.length)];
-  const arr = IDEA_POOL[c];
-  return { cat: c, text: arr[Math.floor(Math.random() * arr.length)] };
+/** A random sample thought (uncategorized). */
+export function randText(): string {
+  return ALL_TEXTS[Math.floor(Math.random() * ALL_TEXTS.length)];
 }
 
-/** Build an idea (without id) — explicit cat+text, or a random sample. */
-export function makeIdea(cat?: CategoryKey | null, text?: string): Omit<Idea, 'id'> {
-  const pick = cat && text ? { cat, text } : randIdeaText(cat ?? undefined);
+/** Build an idea (without id) — explicit text, or a random sample. No category. */
+export function makeIdea(text?: string): Omit<Idea, 'id'> {
   return {
-    ...pick,
+    text: text ?? randText(),
     ...spawnPos(),
     delay: +(Math.random() * 0.2).toFixed(2),
     fl: +(4 + Math.random() * 3).toFixed(1),
@@ -36,7 +37,7 @@ export function makeIdea(cat?: CategoryKey | null, text?: string): Omit<Idea, 'i
 export function seedCollecting(): Idea[] {
   return Array.from({ length: 8 }, (_, i) => ({
     id: i + 1,
-    ...randIdeaText(),
+    text: randText(),
     ...spawnPos(),
     delay: +(i * 0.05).toFixed(2),
     fl: +(4 + Math.random() * 3).toFixed(1),
@@ -47,7 +48,7 @@ export function seedCollecting(): Idea[] {
 export function seedCritical(): Idea[] {
   return Array.from({ length: THRESHOLD }, (_, i) => ({
     id: i + 1,
-    ...randIdeaText(),
+    text: randText(),
     ...spawnPos(),
     delay: +(Math.random() * 0.3).toFixed(2),
     fl: +(4 + Math.random() * 3).toFixed(1),

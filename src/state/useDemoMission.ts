@@ -4,7 +4,7 @@ import { useCallback, useMemo, useReducer } from 'react';
 import { FINAL_REPORT, SAMPLE_CLUSTERS, STAR_MAP } from '../data/catalog';
 import { initialState, missionReducer } from './machine';
 import { makeIdea, seedCollecting, seedCritical } from './sim';
-import type { CategoryKey, MissionApi, Phase } from './types';
+import type { CategoryKey, Idea, MissionApi, Phase } from './types';
 
 const sampleClusters = () => SAMPLE_CLUSTERS.map((c) => ({ ...c }));
 const sampleFinal = () => ({ map: STAR_MAP, ...FINAL_REPORT });
@@ -13,13 +13,15 @@ export function useDemoMission(): MissionApi {
   const [state, dispatch] = useReducer(missionReducer, initialState);
 
   const start = useCallback(() => dispatch({ type: 'start' }), []);
-  const addIdea = useCallback(
-    (cat?: CategoryKey, text?: string) => dispatch({ type: 'addIdea', idea: makeIdea(cat ?? null, text) }),
+  const addIdea = useCallback((text?: string) => dispatch({ type: 'addIdea', idea: makeIdea(text) }), []);
+  const assignCategory = useCallback(
+    (idea: Idea, cat: CategoryKey) => dispatch({ type: 'assignCat', id: idea.id, cat }),
     [],
   );
   const swipe = useCallback(() => dispatch({ type: 'swipe', clusters: sampleClusters() }), []);
   const continueCycle = useCallback(() => dispatch({ type: 'continueCycle' }), []);
   const finish = useCallback(() => dispatch({ type: 'finish', report: sampleFinal() }), []);
+  const finishNow = finish;
   const reset = useCallback(() => dispatch({ type: 'reset' }), []);
 
   const cycleRef = state.cycle;
@@ -68,9 +70,11 @@ export function useDemoMission(): MissionApi {
     busy: false,
     start,
     addIdea,
+    assignCategory,
     swipe,
     continueCycle,
     finish,
+    finishNow,
     reset,
     jump,
   };

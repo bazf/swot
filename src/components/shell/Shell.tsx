@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LINK } from '../../data/catalog';
 import { useDemoMission } from '../../state/useDemoMission';
 import type { Phase, View } from '../../state/types';
+import { useTheme } from '../../state/useTheme';
 import { Multiboard } from '../board';
 import { MobileClient, PhoneScreen } from '../mobile';
 import { ReportOverlay } from '../report';
@@ -12,16 +13,6 @@ import { StarMap } from '../starmap';
 import { Director } from './Director';
 import { FitStage } from './FitStage';
 import { Topbar } from './Topbar';
-
-type Theme = 'dark' | 'light';
-
-function loadTheme(): Theme {
-  try {
-    return (localStorage.getItem('glx-theme') as Theme) || 'dark';
-  } catch {
-    return 'dark';
-  }
-}
 
 const boardCardStyle: React.CSSProperties = {
   position: 'absolute',
@@ -35,18 +26,10 @@ export function Shell() {
   const m = useDemoMission();
   const { phase, addIdea } = m;
   const [view, setView] = useState<View>('board');
-  const [theme, setTheme] = useState<Theme>(loadTheme);
+  const { theme, setTheme } = useTheme('dark');
   const [report, setReport] = useState(false);
   const [auto, setAuto] = useState(false);
   const autoRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('glx-theme', theme);
-    } catch {
-      /* storage unavailable */
-    }
-  }, [theme]);
 
   // Auto idea-stream while collecting (demo convenience).
   useEffect(() => {
@@ -94,6 +77,7 @@ export function Shell() {
                   link={LINK}
                   onStart={m.start}
                   onSwipe={m.swipe}
+                  onAssign={m.assignCategory}
                 />
               )}
             </div>
@@ -121,6 +105,7 @@ export function Shell() {
         swipe={m.swipe}
         continueCycle={m.continueCycle}
         finish={m.finish}
+        finishNow={m.finishNow}
         reset={reset}
       />
     </div>

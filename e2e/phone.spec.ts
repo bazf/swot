@@ -13,13 +13,18 @@ test.beforeEach(async ({ page }) => {
   await page.getByRole('button', { name: /Телефон/ }).click();
 });
 
-test('submits an anonymous thought from the phone', async ({ page }) => {
+test('submits an anonymous thought (no category picker)', async ({ page }) => {
   await page.getByTitle('Накопичення').click();
-  await page.getByRole('button', { name: /Зірки/ }).click();
   await page.getByLabel('Ваша думка').fill('Чудова команда вчителів');
   await page.getByRole('button', { name: /Запустити в космос/ }).click();
   await expect(page.getByText('Думку відправлено!')).toBeVisible();
   await expect(page.getByText(/надіслано: 1/)).toBeVisible();
+});
+
+test('offers idea suggestions on demand', async ({ page }) => {
+  await page.getByTitle('Накопичення').click();
+  await page.getByRole('button', { name: /Запропонувати думку/ }).click();
+  await expect(page.locator('button', { hasText: '✦' }).first()).toBeVisible();
 });
 
 test('shows the downloadable report preview at the finale', async ({ page }) => {

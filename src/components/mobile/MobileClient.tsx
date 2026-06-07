@@ -1,6 +1,6 @@
 /* MobileClient — the teacher's phone client (Slave); screen depends on phase. */
 
-import type { CategoryKey, Phase } from '../../state/types';
+import type { Phase } from '../../state/types';
 import { Starfield } from '../cosmos';
 import { FinishedScreen } from './FinishedScreen';
 import { InputForm } from './InputForm';
@@ -9,7 +9,7 @@ import { ProcessingOverlay } from './ProcessingOverlay';
 
 interface MobileClientProps {
   phase: Phase;
-  onSubmit?: (cat: CategoryKey, text: string) => void;
+  onSubmit?: (text: string) => void;
   onOpenReport: () => void;
 }
 

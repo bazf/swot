@@ -96,14 +96,18 @@ function validClusters(raw: unknown): Cluster[] | null {
   return out.length ? out : null;
 }
 
-/** The brief's "eruption" prompt — group ~40 messages into 4–5 planets. */
+/** The brief's "eruption" prompt — group ~40 messages into 4–5 planets.
+   Most thoughts are uncategorized (teachers don't pick a zone) — the model must
+   assign each cluster a SWOT category; a `[cat]` prefix is a moderator hint. */
 export function clusterPrompt(messages: Message[]): string {
   const lines = messages
-    .map((m, i) => `${i + 1}. [${m.cat}] ${m.text}`)
+    .map((m, i) => `${i + 1}. ${m.cat ? `[${m.cat}] ` : ''}${m.text}`)
     .join('\n');
   return (
-    'Ти — аналітик педагогічної ради. Згрупуй ці думки вчителів у 4–5 змістових кластерів. ' +
-    'Категорії SWOT: str=сильні сторони, wek=слабкі сторони, opp=можливості, thr=загрози. ' +
+    'Ти — аналітик педагогічної ради. Тобі надано анонімні думки вчителів; ' +
+    'деякі мають орієнтовну категорію у дужках, більшість — без категорії. ' +
+    'Згрупуй усі думки у 4–5 змістових кластерів і КОЖНОМУ кластеру признач категорію SWOT: ' +
+    'str=сильні сторони, wek=слабкі сторони, opp=можливості, thr=загрози. ' +
     'Поверни СУВОРИЙ JSON-масив без пояснень у форматі: ' +
     '[{"cat":"str|wek|opp|thr","title":"коротка назва","emoji":"один емодзі","percentage":25}]. ' +
     'Сума percentage має приблизно дорівнювати 100.\n\nДумки:\n' +
@@ -163,7 +167,8 @@ export function finalPrompt(clusters: Cluster[]): string {
     .map((c) => `- [${c.cat}] ${c.title} (${c.percentage}%)`)
     .join('\n');
   return (
-    'Проаналізуй усі зібрані кластери думок педагогічної ради. ' +
+    'Проаналізуй усі зібрані думки та кластери педагогічної ради. ' +
+    'Якщо якась думка не має категорії — самостійно признач їй правильний квадрант SWOT. ' +
     'Створи класичний SWOT: 4 списки (по 2–3 планети) за категоріями str/wek/opp/thr. ' +
     'Визнач ТОП-3 пріоритети на наступний рік. ' +
     'Напиши одне коротке речення-висновок для озвучення роботом (без спецсимволів та емодзі). ' +

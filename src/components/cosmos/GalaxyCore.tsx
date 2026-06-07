@@ -18,6 +18,8 @@ export function GalaxyCore({ size = 220, critical = false, label, onSwipe }: Gal
         height: size,
         display: 'grid',
         placeItems: 'center',
+        // Decorative — never intercept pointers, so thoughts under/near it stay draggable.
+        pointerEvents: 'none',
         animation: critical ? 'core-shake .5s ease-in-out infinite' : 'float-soft 7s ease-in-out infinite',
       }}
     >
@@ -83,6 +85,7 @@ export function GalaxyCore({ size = 220, critical = false, label, onSwipe }: Gal
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 4,
+            pointerEvents: 'auto',
             cursor: 'pointer',
             border: 'none',
             background: 'transparent',

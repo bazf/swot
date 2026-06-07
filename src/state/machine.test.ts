@@ -50,4 +50,15 @@ describe('missionReducer', () => {
     expect(s.count).toBe(1);
     expect(s.nextId).toBe(3);
   });
+
+  it('assignCat colours one idea by id (moderator zone sort)', () => {
+    const seeded = missionReducer(initialState, {
+      type: 'seed',
+      phase: 'collecting',
+      ideas: [{ id: 7, ...idea() }],
+      count: 1,
+    });
+    const s = missionReducer(seeded, { type: 'assignCat', id: 7, cat: 'opp' });
+    expect(s.ideas.find((i) => i.id === 7)?.cat).toBe('opp');
+  });
 });

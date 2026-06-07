@@ -1,11 +1,13 @@
 /* Multiboard — the moderator's big screen for start/collecting/critical/clusters.
    (The finale is rendered by StarMap.) */
 
-import type { Cluster, Idea, Phase } from '../../state/types';
+import type { CategoryKey, Cluster, Idea, Phase } from '../../state/types';
 import { Asteroid, Draggable, GalaxyCore, Planet, Starfield } from '../cosmos';
 import { BoardHUD } from './BoardHUD';
+import { BoardZones } from './BoardZones';
 import { CriticalBanner } from './CriticalBanner';
 import { StartScreen } from './StartScreen';
+import { zoneForPoint } from './zones';
 
 interface MultiboardProps {
   phase: Phase;
@@ -16,9 +18,10 @@ interface MultiboardProps {
   link: string;
   onStart: () => void;
   onSwipe: () => void;
+  onAssign: (idea: Idea, cat: CategoryKey) => void;
 }
 
-export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart, onSwipe }: MultiboardProps) {
+export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart, onSwipe, onAssign }: MultiboardProps) {
   const crit = phase === 'critical';
   const showCore = phase === 'collecting' || phase === 'critical';
   const showIdeas = phase === 'collecting' || phase === 'critical';
@@ -31,9 +34,15 @@ export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart
 
       {phase !== 'start' && phase !== 'starmap' && <BoardHUD phase={phase} count={count} cycle={cycle} />}
 
+      {showIdeas && <BoardZones />}
+
       {showIdeas &&
         ideas.map((it) => (
-          <Draggable key={it.id} style={{ position: 'absolute', left: it.x, top: it.y }}>
+          <Draggable
+            key={it.id}
+            style={{ position: 'absolute', left: it.x, top: it.y, zIndex: 10 }}
+            onDrop={(delta) => onAssign(it, zoneForPoint(it.x + delta.x, it.y + delta.y))}
+          >
             <div
               style={{
                 animation: `asteroid-in .6s ease ${it.delay}s both, float-soft ${it.fl}s ease-in-out ${it.delay}s infinite`,
@@ -52,7 +61,9 @@ export function Multiboard({ phase, ideas, count, cycle, clusters, link, onStart
 
       {crit && <CriticalBanner />}
 
-      {phase === 'collecting' && <div className="drag-hint">✋ Перетягуйте думки, щоб упорядкувати простір</div>}
+      {phase === 'collecting' && (
+        <div className="drag-hint">✋ Перетягуйте думки в кольорові зони, щоб упорядкувати їх</div>
+      )}
 
       {phase === 'clusters' && (
         <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', zIndex: 18, animation: 'fade-up .7s ease' }}>

@@ -32,3 +32,9 @@ test('walks the full mission: critical → clusters → star map', async ({ page
   await expect(page.getByRole('heading', { name: /Зоряна карта стратегії/ })).toBeVisible();
   await expect(page.getByText('ТОП-3 на наступний рік')).toBeVisible();
 });
+
+test('moderator can finalize early from the board', async ({ page }) => {
+  await page.getByTitle('Накопичення').click(); // collecting, below the threshold
+  await page.getByRole('button', { name: /Завершити зараз/ }).click();
+  await expect(page.getByRole('heading', { name: /Зоряна карта стратегії/ })).toBeVisible();
+});

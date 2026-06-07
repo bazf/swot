@@ -2,7 +2,7 @@
    Encodes the brief's mechanics so it can be unit-tested in isolation. */
 
 import { THRESHOLD } from '../data/catalog';
-import type { Cluster, Idea, MissionFinalReport, Phase } from './types';
+import type { CategoryKey, Cluster, Idea, MissionFinalReport, Phase } from './types';
 
 export interface MissionState {
   phase: Phase;
@@ -27,6 +27,7 @@ export const initialState: MissionState = {
 export type MissionAction =
   | { type: 'start' }
   | { type: 'addIdea'; idea: Omit<Idea, 'id'> }
+  | { type: 'assignCat'; id: number; cat: CategoryKey }
   | { type: 'swipe'; clusters: Cluster[] }
   | { type: 'continueCycle' }
   | { type: 'finish'; report: MissionFinalReport }
@@ -54,6 +55,13 @@ export function missionReducer(state: MissionState, action: MissionAction): Miss
       const phase: Phase = count >= THRESHOLD ? 'critical' : state.phase;
       return { ...state, ideas, count, nextId: id, phase };
     }
+
+    case 'assignCat':
+      // Moderator dragged a stardust thought into a SWOT zone → colour it.
+      return {
+        ...state,
+        ideas: state.ideas.map((i) => (i.id === action.id ? { ...i, cat: action.cat } : i)),
+      };
 
     case 'swipe':
       // Oksana swipes the core → AI clusters the 40 → next accumulation cycle.
