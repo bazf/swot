@@ -1,3 +1,4 @@
+import CryptoJS from 'crypto-js';
 import {
   clearStoredKey,
   decryptConfig,
@@ -18,9 +19,22 @@ describe('crypto', () => {
     expect(decryptConfig(ct, 'pw')).toBe('привіт світ');
   });
 
-  it('returns null on the wrong password', () => {
-    const ct = encryptConfig('secret', 'pw');
-    expect(decryptConfig(ct, 'nope')).toBeNull();
+  it('returns null on the wrong password — every time, not just by luck', () => {
+    // Raw AES-CBC decrypts wrong-key junk to a plausible string ~1% of the time
+    // (a different random salt per run), which made this assertion flaky. The
+    // sealed integrity header must reject the wrong password across many salts.
+    for (let i = 0; i < 50; i++) {
+      const ct = encryptConfig('secret', 'pw');
+      expect(decryptConfig(ct, 'nope')).toBeNull();
+    }
+  });
+
+  it('still decrypts legacy (untagged) ciphertext for the committed config', () => {
+    // The already-committed ENCRYPTED_CONFIG predates the integrity header, so
+    // raw AES ciphertext (no glx1: envelope) must keep decrypting with its key.
+    const legacy = CryptoJS.AES.encrypt('legacy-secret', 'pw').toString();
+    expect(legacy.startsWith('glx1:')).toBe(false);
+    expect(decryptConfig(legacy, 'pw')).toBe('legacy-secret');
   });
 
   it('round-trips JSON', () => {

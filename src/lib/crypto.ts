@@ -6,16 +6,32 @@
 
 import CryptoJS from 'crypto-js';
 
+/* Raw AES-CBC has no key authentication, so decrypting with the *wrong*
+   password still succeeds ~1% of the time — it returns plausible-looking junk
+   instead of failing. We therefore seal a fixed integrity header inside the
+   ciphertext: on decryption its presence proves the password was correct, so a
+   wrong password is rejected deterministically. The `glx1:` envelope tags this
+   verifiable format; legacy (untagged) ciphertext is still decrypted
+   best-effort so previously committed configs keep working. */
+const FORMAT_TAG = 'glx1:';
+const HEADER = 'GLX-OK\n';
+
 /** AES-encrypt arbitrary text with a password (OpenSSL-compatible KDF). */
 export function encryptConfig(plaintext: string, password: string): string {
-  return CryptoJS.AES.encrypt(plaintext, password).toString();
+  return FORMAT_TAG + CryptoJS.AES.encrypt(HEADER + plaintext, password).toString();
 }
 
 /** AES-decrypt; returns null on wrong password / malformed input. */
 export function decryptConfig(ciphertext: string, password: string): string | null {
   try {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, password);
-    const text = bytes.toString(CryptoJS.enc.Utf8);
+    if (ciphertext.startsWith(FORMAT_TAG)) {
+      const body = CryptoJS.AES.decrypt(ciphertext.slice(FORMAT_TAG.length), password).toString(CryptoJS.enc.Utf8);
+      // A correct password reproduces the sealed header; anything else is wrong.
+      return body.startsWith(HEADER) ? body.slice(HEADER.length) : null;
+    }
+    // Legacy untagged ciphertext (e.g. an already-committed config): best-effort
+    // decrypt — the config layer's structural validation guards against junk.
+    const text = CryptoJS.AES.decrypt(ciphertext, password).toString(CryptoJS.enc.Utf8);
     return text.length ? text : null;
   } catch {
     return null;
