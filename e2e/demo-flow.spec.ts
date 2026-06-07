@@ -19,7 +19,7 @@ test('renders the start screen', async ({ page }) => {
 });
 
 test('walks the full mission: critical → clusters → star map', async ({ page }) => {
-  // Jump to critical mass (seeds 40 ideas).
+  // Jump to critical mass (seeds THRESHOLD ideas).
   await page.getByTitle('Критична маса').click();
   await expect(page.getByText('Критична маса!')).toBeVisible();
 

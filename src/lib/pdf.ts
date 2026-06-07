@@ -22,6 +22,16 @@ export async function generateReportPdf(
     import('jspdf'),
   ]);
 
+  // Make sure the web fonts (Unbounded/Nunito) are loaded before we rasterize,
+  // otherwise a cold export can fall back to a system font and corrupt the text.
+  if (document.fonts?.ready) {
+    try {
+      await document.fonts.ready;
+    } catch {
+      /* Font Loading API unavailable — proceed anyway */
+    }
+  }
+
   const canvas = await html2canvas(node, {
     scale: 2,
     backgroundColor: '#ffffff',

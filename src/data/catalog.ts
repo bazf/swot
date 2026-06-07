@@ -129,7 +129,10 @@ export const FINAL_REPORT: FinalReport = {
 };
 
 /** Critical mass of ideas. */
-export const THRESHOLD = 40;
+export const THRESHOLD = 50;
+
+/** Max planets the star-map/report layout supports per SWOT quadrant. */
+export const MAX_PLANETS = 3;
 
 /** Join link shown on the start screen. */
 export const LINK = 'liceum-1946.space';

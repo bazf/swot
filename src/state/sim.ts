@@ -44,7 +44,7 @@ export function seedCollecting(): Idea[] {
   }));
 }
 
-/** Seed a full 40 ideas for the "jump to critical" shortcut. */
+/** Seed a full critical mass (THRESHOLD) of ideas for the "jump to critical" shortcut. */
 export function seedCritical(): Idea[] {
   return Array.from({ length: THRESHOLD }, (_, i) => ({
     id: i + 1,

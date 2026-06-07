@@ -38,9 +38,18 @@ export function ReportOverlay({ map, report, onClose }: ReportOverlayProps) {
   const download = async () => {
     if (!docRef.current || busy) return;
     setBusy(true);
+    // The on-screen node lives under a `transform: scale()` wrapper (used to fit
+    // narrow phones). html2canvas mis-rasterizes elements under a CSS transform —
+    // overlapping glyphs, collapsed spacing — so capture a full-size, untransformed
+    // off-screen clone instead. This also leaves the visible preview untouched.
+    const clone = docRef.current.cloneNode(true) as HTMLElement;
+    const holder = document.createElement('div');
+    holder.setAttribute('aria-hidden', 'true');
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;pointer-events:none;';
+    holder.appendChild(clone);
+    document.body.appendChild(holder);
     try {
-      // docRef is the unscaled 520px node → the rasterized PDF stays crisp.
-      await generateReportPdf(docRef.current);
+      await generateReportPdf(clone);
     } catch {
       try {
         window.print?.();
@@ -48,6 +57,7 @@ export function ReportOverlay({ map, report, onClose }: ReportOverlayProps) {
         /* printing unavailable */
       }
     } finally {
+      holder.remove();
       setBusy(false);
     }
   };
