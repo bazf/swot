@@ -62,3 +62,32 @@ export function scrubHash(): void {
     /* history unavailable */
   }
 }
+
+const STORED_KEY = 'glx-key';
+
+/** Read the remembered access key from localStorage (null if none / unavailable). */
+export function readStoredKey(): string | null {
+  try {
+    return localStorage.getItem(STORED_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** Remember the access key for subsequent visits (so a refresh stays unlocked). */
+export function storeKey(key: string): void {
+  try {
+    localStorage.setItem(STORED_KEY, key);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+/** Forget the remembered access key. */
+export function clearStoredKey(): void {
+  try {
+    localStorage.removeItem(STORED_KEY);
+  } catch {
+    /* storage unavailable */
+  }
+}

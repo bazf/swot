@@ -51,4 +51,27 @@ describe('resolveConfig', () => {
     const r = resolveConfig({ encrypted: ct, hash: '#key=pw', search: '?demo=1', env: {} });
     expect(r.mode).toBe('demo');
   });
+
+  it('reuses a remembered key when the URL has none', () => {
+    const ct = encryptJson(cfg, 'pw');
+    const r = resolveConfig({ encrypted: ct, hash: '', search: '', env: {}, storedKey: 'pw' });
+    expect(r.mode).toBe('live');
+    expect(r.key).toBe('pw');
+    expect(r.fromHashKey).toBe(false);
+  });
+
+  it('lets a URL key override the remembered key', () => {
+    const ct = encryptJson(cfg, 'pw');
+    const r = resolveConfig({ encrypted: ct, hash: '#key=pw', search: '', env: {}, storedKey: 'stale' });
+    expect(r.mode).toBe('live');
+    expect(r.key).toBe('pw');
+    expect(r.fromHashKey).toBe(true);
+  });
+
+  it('falls back to a valid remembered key when the URL key is wrong', () => {
+    const ct = encryptJson(cfg, 'pw');
+    const r = resolveConfig({ encrypted: ct, hash: '#key=wrong', search: '', env: {}, storedKey: 'pw' });
+    expect(r.mode).toBe('live');
+    expect(r.key).toBe('pw');
+  });
 });

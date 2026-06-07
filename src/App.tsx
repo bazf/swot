@@ -7,7 +7,7 @@ import { AccessError } from './components/common/AccessError';
 import { LoadingScreen } from './components/common/LoadingScreen';
 import { Shell } from './components/shell/Shell';
 import { resolveConfig } from './lib/config';
-import { scrubHash } from './lib/crypto';
+import { clearStoredKey, scrubHash, storeKey } from './lib/crypto';
 import { isAdminMode } from './lib/session';
 
 const LiveApp = lazy(() => import('./components/live/LiveApp').then((m) => ({ default: m.LiveApp })));
@@ -16,10 +16,13 @@ export function App() {
   const admin = isAdminMode();
   const res = useMemo(() => resolveConfig(), []);
 
-  // Drop the password from the address bar immediately once it's been read.
+  // Drop the password from the address bar once read; remember a working key so a
+  // refresh stays unlocked, and forget a stale/invalid one when access is locked.
   useEffect(() => {
     if (res.fromHashKey) scrubHash();
-  }, [res.fromHashKey]);
+    if (res.mode === 'live' && res.key) storeKey(res.key);
+    else if (res.mode === 'locked') clearStoredKey();
+  }, [res.fromHashKey, res.mode, res.key]);
 
   if (admin) return <AdminConfigForm />;
   if (res.mode === 'demo') return <Shell />;

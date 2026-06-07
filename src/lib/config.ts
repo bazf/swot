@@ -1,7 +1,7 @@
 /* config.ts — resolve the runtime mode (demo / live / locked) + decrypted config. */
 
 import type { Role } from '../state/types';
-import { decryptJson, readKeyFromHash } from './crypto';
+import { decryptJson, readKeyFromHash, readStoredKey } from './crypto';
 import { ENCRYPTED_CONFIG } from './encrypted-config';
 import { DEFAULT_SESSION_ID, readRole } from './session';
 
@@ -34,8 +34,10 @@ export interface Resolution {
   config: AppConfig | null;
   role: Role;
   sessionId: string;
-  /** True when `config` came from the URL hash key (→ scrub the hash). */
+  /** True when a key was present in the URL hash (→ scrub the hash). */
   fromHashKey: boolean;
+  /** The password that unlocked the config (so the caller can remember it). */
+  key?: string;
 }
 
 export interface ResolveInput {
@@ -43,6 +45,8 @@ export interface ResolveInput {
   search?: string;
   encrypted?: string;
   env?: Partial<ImportMetaEnv>;
+  /** Previously remembered key; defaults to localStorage. */
+  storedKey?: string;
 }
 
 /** Local-only live mode for developers (VITE_LOCAL_LIVE=1 in .env.local). */
@@ -102,20 +106,23 @@ export function resolveConfig(input: ResolveInput = {}): Resolution {
     return { mode: 'demo', config: null, role, sessionId: DEFAULT_SESSION_ID, fromHashKey: false };
   }
 
-  // 3. Ciphertext present → need the URL key to unlock it.
-  const key = readKeyFromHash(hash);
-  if (!key) {
-    return { mode: 'locked', config: null, role, sessionId: DEFAULT_SESSION_ID, fromHashKey: false };
+  // 3. Ciphertext present → unlock with the URL key, or a previously remembered one.
+  //    A URL key wins (and overwrites the stored one); a stored key keeps a refresh unlocked.
+  const urlKey = readKeyFromHash(hash);
+  const storedKey = input.storedKey ?? readStoredKey() ?? undefined;
+  const candidates = [...new Set([urlKey, storedKey].filter((k): k is string => !!k))];
+  for (const k of candidates) {
+    const cfg = decryptJson<AppConfig>(encrypted, k);
+    if (isValidConfig(cfg)) {
+      return {
+        mode: 'live',
+        config: cfg,
+        role,
+        sessionId: cfg.sessionId || DEFAULT_SESSION_ID,
+        fromHashKey: !!urlKey,
+        key: k,
+      };
+    }
   }
-  const cfg = decryptJson<AppConfig>(encrypted, key);
-  if (!isValidConfig(cfg)) {
-    return { mode: 'locked', config: null, role, sessionId: DEFAULT_SESSION_ID, fromHashKey: false };
-  }
-  return {
-    mode: 'live',
-    config: cfg,
-    role,
-    sessionId: cfg.sessionId || DEFAULT_SESSION_ID,
-    fromHashKey: true,
-  };
+  return { mode: 'locked', config: null, role, sessionId: DEFAULT_SESSION_ID, fromHashKey: !!urlKey };
 }

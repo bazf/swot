@@ -70,6 +70,10 @@ API keys must never be committed in plaintext (the repo is public). Instead:
 > shape-validated starting point. The encryption gates app discovery and bundles the
 > secret OpenRouter key; rules protect the data. Tighten/disable rules outside the
 > event window.
+>
+> The access key is **remembered on the device** (localStorage `glx-key`) so a refresh
+> stays unlocked; opening a new `#key=` overwrites it, and clearing site data forgets it
+> (an intentional convenience tradeoff, equivalent to keeping the key in the URL/history).
 
 For local live testing without the blob, copy `.env.example` → `.env.local`, set
 `VITE_LOCAL_LIVE=1` and fill the values (gitignored).

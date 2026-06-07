@@ -1,4 +1,15 @@
-import { decryptConfig, decryptJson, encryptConfig, encryptJson, readHashParam, readKeyFromHash, scrubHash } from './crypto';
+import {
+  clearStoredKey,
+  decryptConfig,
+  decryptJson,
+  encryptConfig,
+  encryptJson,
+  readHashParam,
+  readKeyFromHash,
+  readStoredKey,
+  scrubHash,
+  storeKey,
+} from './crypto';
 
 describe('crypto', () => {
   it('round-trips text (incl. Cyrillic)', () => {
@@ -33,5 +44,14 @@ describe('crypto', () => {
     scrubHash();
     expect(window.location.hash).toBe('');
     expect(window.location.search).toBe('?x=1');
+  });
+
+  it('remembers and forgets the access key', () => {
+    clearStoredKey();
+    expect(readStoredKey()).toBeNull();
+    storeKey('hunter2');
+    expect(readStoredKey()).toBe('hunter2');
+    clearStoredKey();
+    expect(readStoredKey()).toBeNull();
   });
 });
