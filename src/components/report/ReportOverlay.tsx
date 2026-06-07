@@ -44,7 +44,8 @@ export function ReportOverlay({ map, report, onClose }: ReportOverlayProps) {
     // off-screen clone instead. This also leaves the visible preview untouched.
     const clone = docRef.current.cloneNode(true) as HTMLElement;
     const holder = document.createElement('div');
-    holder.style.cssText = 'position:fixed;left:-10000px;top:0;';
+    holder.setAttribute('aria-hidden', 'true');
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;pointer-events:none;';
     holder.appendChild(clone);
     document.body.appendChild(holder);
     try {

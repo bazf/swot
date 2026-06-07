@@ -35,7 +35,7 @@ export function Quadrant({ cat, planets, corner }: QuadrantProps) {
   // Cap to the layouts we actually have coordinates for, so we never index past `coords`.
   const shown = planets.slice(0, MAX_PLANETS);
   const n = shown.length;
-  const coords = (LAYOUTS[corner][n] || LAYOUTS[corner][3]).slice(0, n);
+  const coords = (LAYOUTS[corner][n] || LAYOUTS[corner][MAX_PLANETS]).slice(0, n);
   const pts = coords.map(([x, y]) => ({ x, y }));
   const vEdge = topHeader ? 'top' : 'bottom';
   const badge = <CategoryOrb cat={cat} size={30} fontSize={15} boxShadow={`0 0 14px rgba(${c.glow},.6)`} />;
