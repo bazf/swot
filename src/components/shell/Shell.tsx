@@ -3,7 +3,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import orbitalDrift from '../../assets/audio/orbital-drift.mp3';
-import { LINK } from '../../data/catalog';
 import { useBackgroundMusic } from '../../state/useBackgroundMusic';
 import { useDemoMission } from '../../state/useDemoMission';
 import type { Phase, View } from '../../state/types';
@@ -86,7 +85,6 @@ export function Shell() {
                   count={m.count}
                   cycle={m.cycle}
                   clusters={m.clusters}
-                  link={LINK}
                   onStart={m.start}
                   onSwipe={m.swipe}
                   onAssign={m.assignCategory}

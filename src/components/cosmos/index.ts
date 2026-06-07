@@ -4,6 +4,7 @@ export { Draggable } from './Draggable';
 export { Starfield } from './Starfield';
 export { GalaxyCore } from './GalaxyCore';
 export { Asteroid } from './Asteroid';
+export { StarBirth, glowForId } from './StarBirth';
 export { Planet } from './Planet';
 export { Constellation, type Point } from './Constellation';
 export { CategoryOrb } from './CategoryOrb';

@@ -1,7 +1,6 @@
 /* LiveBoard — the Master multiboard, driven by Firebase + OpenRouter. */
 
 import orbitalDrift from '../../assets/audio/orbital-drift.mp3';
-import { LINK } from '../../data/catalog';
 import type { MissionService } from '../../lib/firebase';
 import type { OpenRouterOptions } from '../../lib/openrouter';
 import { useBackgroundMusic } from '../../state/useBackgroundMusic';
@@ -51,7 +50,6 @@ export function LiveBoard({ service, orOpts }: LiveBoardProps) {
                 count={m.count}
                 cycle={m.cycle}
                 clusters={m.clusters}
-                link={LINK}
                 onStart={m.start}
                 onSwipe={m.swipe}
                 onAssign={m.assignCategory}

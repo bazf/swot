@@ -1,14 +1,13 @@
-/* StartScreen — mission intro with the pulsing core, title and join card. */
+/* StartScreen — mission intro with the pulsing core, title and start button. */
 
 import { GalaxyCore } from '../cosmos';
 import { CategoryLegend } from './CategoryLegend';
 
 interface StartScreenProps {
   onStart: () => void;
-  link: string;
 }
 
-export function StartScreen({ onStart, link }: StartScreenProps) {
+export function StartScreen({ onStart }: StartScreenProps) {
   return (
     <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', zIndex: 20, animation: 'fade-up .8s ease' }}>
       <div
@@ -58,30 +57,9 @@ export function StartScreen({ onStart, link }: StartScreenProps) {
           Сьогодні ми аналізуємо наш рік не на папері, а в космосі. Чотири зони думок — анонімно, з ваших смартфонів.
         </p>
         <CategoryLegend compact />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 4 }}>
-          <button className="btn btn-gold" onClick={onStart}>
-            🚀 Почати місію
-          </button>
-          <div className="glass" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 11px 9px 15px', borderRadius: 14 }}>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
-                Приєднатися
-              </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 12.5 }}>{link}</div>
-            </div>
-            <div style={{ width: 46, height: 46, borderRadius: 9, background: '#fff', padding: 4 }}>
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 5,
-                  backgroundImage: 'repeating-conic-gradient(#0a0e27 0% 25%, #fff 0% 50%)',
-                  backgroundSize: '11px 11px',
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <button className="btn btn-gold" onClick={onStart} style={{ marginTop: 4 }}>
+          🚀 Почати місію
+        </button>
       </div>
     </div>
   );
