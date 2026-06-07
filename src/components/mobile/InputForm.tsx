@@ -6,8 +6,12 @@ import launchSound from '../../assets/audio/launching-missile.mp3';
 import logo from '../../assets/logo.png';
 import { randomSuggestions } from '../../data/suggestions';
 import { playOneShot } from '../../lib/audio';
+import { vibrate } from '../../lib/haptics';
 
 const IDLE_MS = 6000;
+
+/** Liftoff haptic: a short tick then a rumble, in step with the launch sound. */
+const LAUNCH_VIBRATION = [12, 18, 70];
 
 interface InputFormProps {
   onSubmit?: (text: string) => void;
@@ -38,6 +42,7 @@ export function InputForm({ onSubmit }: InputFormProps) {
   const submit = () => {
     if (!ready) return;
     playOneShot(launchSound, 0.7);
+    vibrate(LAUNCH_VIBRATION);
     onSubmit?.(text.trim());
     setSent((s) => s + 1);
     setText('');

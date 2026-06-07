@@ -1,9 +1,10 @@
 /* useLiveMission — binds the mission API to Firebase (master/slave). */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FINAL_REPORT, STAR_MAP, THRESHOLD } from '../data/catalog';
 import type { AppStateDoc, MessageDoc, MissionService } from '../lib/firebase';
 import { clusterIdeas, finalAnalysis, type OpenRouterOptions } from '../lib/openrouter';
+import { computeVoteStats } from '../lib/stats';
 import type { CategoryKey, Cluster, Idea, MissionApi, MissionFinalReport, Phase, Role } from './types';
 
 function hashStr(s: string): number {
@@ -33,6 +34,15 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
   const [clusters, setClusters] = useState<Cluster[]>([]);
   const [finalReport, setFinalReport] = useState<MissionFinalReport | null>(null);
   const [busy, setBusy] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+
+  // Every thought the board has ever seen, keyed by message id. Firebase clears
+  // /messages after each clustering cycle, so this is the only complete record of
+  // the session's votes — the source for the finale's deterministic statistics.
+  const allMessagesRef = useRef<Map<string, MessageDoc>>(new Map());
+  const remember = useCallback((msgs: MessageDoc[]) => {
+    for (const m of msgs) if (m.id) allMessagesRef.current.set(m.id, m);
+  }, []);
 
   useEffect(() => {
     const unsubs = [
@@ -40,9 +50,16 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
       service.onClusters(setClusters),
       service.onFinalReport(setFinalReport),
     ];
-    if (role === 'board') unsubs.push(service.onMessages(setMessages));
+    if (role === 'board') {
+      unsubs.push(
+        service.onMessages((msgs) => {
+          setMessages(msgs);
+          remember(msgs);
+        }),
+      );
+    }
     return () => unsubs.forEach((u) => u());
-  }, [service, role]);
+  }, [service, role, remember]);
 
   const phase: Phase = appState?.phase ?? 'start';
   const cycle = appState?.cycle ?? 1;
@@ -112,7 +129,11 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
   const finalizeFrom = useCallback(
     async (cl: Cluster[]) => {
       const report = await finalAnalysis(cl, orOpts);
-      await service.setFinalReport(report);
+      // Count the votes locally (proportions + similar votes) — always real, even
+      // when the AI synthesis fell back to the sample report.
+      const stats = computeVoteStats([...allMessagesRef.current.values()]);
+      const withStats = { ...report, stats: stats.total > 0 ? stats : report.stats };
+      await service.setFinalReport(withStats);
       await service.setAppState({ phase: 'starmap' });
     },
     [service, orOpts],
@@ -120,18 +141,22 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
 
   const finish = useCallback(async () => {
     setBusy(true);
+    setFinalizing(true);
     try {
       await finalizeFrom(clusters);
     } finally {
       setBusy(false);
+      setFinalizing(false);
     }
   }, [finalizeFrom, clusters]);
 
   // Wrap up from any phase: cluster whatever raw thoughts remain, then finalize.
   const finishNow = useCallback(async () => {
     setBusy(true);
+    setFinalizing(true);
     try {
       const msgs = await service.getMessagesOnce();
+      remember(msgs);
       let cl = clusters;
       if (msgs.length) {
         cl = await clusterIdeas(toClusterInput(msgs), orOpts);
@@ -141,10 +166,12 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
       await finalizeFrom(cl);
     } finally {
       setBusy(false);
+      setFinalizing(false);
     }
-  }, [service, orOpts, clusters, finalizeFrom]);
+  }, [service, orOpts, clusters, finalizeFrom, remember]);
 
   const reset = useCallback(() => {
+    allMessagesRef.current.clear();
     void service.resetMission();
   }, [service]);
 
@@ -160,6 +187,7 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
     map,
     report,
     busy,
+    finalizing,
     start,
     addIdea,
     assignCategory,

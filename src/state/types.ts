@@ -61,6 +61,28 @@ export interface StarPlanet {
 /** Final star map: planets per SWOT quadrant. */
 export type SwotMap = Record<CategoryKey, StarPlanet[]>;
 
+/** A repeated/similar thought — several teachers raised the same point. */
+export interface VoteTheme {
+  /** Representative original wording. */
+  text: string;
+  /** How many similar thoughts were merged into this theme. */
+  count: number;
+  /** Dominant SWOT category, when any of the merged thoughts was sorted. */
+  cat?: CategoryKey;
+}
+
+/** Deterministic tally of the collected thoughts ("votes"), counted at finalization. */
+export interface VoteStats {
+  /** Total thoughts collected across the whole session. */
+  total: number;
+  /** Distinct thoughts after merging near-duplicates. */
+  unique: number;
+  /** How many sorted thoughts fell into each SWOT quadrant. */
+  byCategory: Record<CategoryKey, number>;
+  /** Top repeated themes (similar votes), most-voted first. */
+  themes: VoteTheme[];
+}
+
 /** Priorities, recommendations, a written summary + the spoken AI conclusion. */
 export interface FinalReport {
   priorities: string[];
@@ -69,6 +91,8 @@ export interface FinalReport {
   recommendations?: string[];
   /** A fuller written summary for the report (the spoken `conclusion` stays short). */
   summary?: string;
+  /** Vote statistics counted from the raw thoughts (proportions + similar votes). */
+  stats?: VoteStats;
 }
 
 /** Combined finale payload persisted to Firebase `/final_report`. */
@@ -93,6 +117,8 @@ export interface MissionApi {
   report: FinalReport;
   /** AI request in flight (board only). */
   busy: boolean;
+  /** The finale is being synthesized — drives the big board indicator. */
+  finalizing: boolean;
   start: () => void;
   addIdea: (text?: string) => void;
   /** Moderator manually sorts a thought into a SWOT zone. */
