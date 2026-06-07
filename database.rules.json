@@ -1,0 +1,31 @@
+{
+  "//": "Starting-point Realtime Database rules for «Галактика 1946». This is the REAL security boundary (the apiKey is public by design). The mission is anonymous and one-day, so writes are open but shape-validated. Tighten or disable outside the event window. Apply via Firebase console → Realtime Database → Rules, or `firebase deploy --only database`.",
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "sessions": {
+      "$session": {
+        "app_state": {
+          ".read": true,
+          ".write": true,
+          ".validate": "newData.hasChildren(['phase'])"
+        },
+        "messages": {
+          ".read": true,
+          ".write": true,
+          "$message": {
+            ".validate": "newData.hasChildren(['cat', 'text', 'ts']) && newData.child('text').isString() && newData.child('text').val().length <= 500"
+          }
+        },
+        "clusters": {
+          ".read": true,
+          ".write": true
+        },
+        "final_report": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    }
+  }
+}

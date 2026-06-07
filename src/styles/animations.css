@@ -1,0 +1,110 @@
+/* ============================================================
+   Shared animations
+   ============================================================ */
+
+/* Entrance: animate transform only — the resting state stays visible even when
+   the animation timeline is frozen (capture / PDF / reduced-motion). */
+@keyframes fade-up {
+  from {
+    transform: translateY(22px) scale(0.985);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes core-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes core-shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  20% {
+    transform: translate(-3px, 2px) rotate(-1deg);
+  }
+  40% {
+    transform: translate(3px, -2px) rotate(1deg);
+  }
+  60% {
+    transform: translate(-2px, -2px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(2px, 2px) rotate(1deg);
+  }
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes asteroid-in {
+  0% {
+    transform: scale(0.62) translateY(16px);
+  }
+  60% {
+    transform: scale(1.04) translateY(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nebula-drift {
+  to {
+    transform: translate(-60px, -40px);
+  }
+}

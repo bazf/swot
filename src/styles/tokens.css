@@ -1,0 +1,82 @@
+/* ============================================================
+   Галактика Зубрянського ліцею — design tokens
+   Illustrative fairy-tale cosmos · brand: deep navy + gold
+   ============================================================ */
+
+:root {
+  /* ----- Cosmic background ----- */
+  --space-0: #05071a; /* deepest */
+  --space-1: #0a0e27; /* base */
+  --space-2: #141a44; /* raised */
+  --space-3: #1d2660; /* panels */
+
+  /* ----- Brand ----- */
+  --navy: #1b3a6b;
+  --gold: #f2a900;
+  --gold-soft: #ffc94d;
+
+  /* ----- Text ----- */
+  --ink: #eef2ff;
+  --ink-dim: #aeb8e6;
+  --ink-mute: #6e78ae;
+
+  /* ----- SWOT categories ----- */
+  --str: #ffc94d;  --str-deep: #f2a900;  --str-glow: 255, 180, 0;   /* Зірки · Сильні */
+  --wek: #b07cff;  --wek-deep: #8a4dff;  --wek-glow: 140, 80, 255;  /* Чорні діри · Слабкі */
+  --opp: #34e0c4;  --opp-deep: #12b9a0;  --opp-glow: 40, 224, 196;  /* Нові планети · Можливості */
+  --thr: #ff7e6e;  --thr-deep: #f4513b;  --thr-glow: 255, 90, 70;   /* Метеорити · Загрози */
+
+  /* ----- Glass ----- */
+  --glass: rgba(28, 36, 86, 0.55);
+  --glass-brd: rgba(150, 170, 255, 0.16);
+  --glass-hi: rgba(255, 255, 255, 0.06);
+
+  /* ----- Themed surfaces ----- */
+  --chip-base: rgba(20, 26, 68, 0.82);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.08);
+  --bar-bg: rgba(8, 11, 32, 0.6);
+  --title-grad: linear-gradient(180deg, #fff, #9db4ff);
+  --hairline: rgba(255, 255, 255, 0.1);
+
+  /* ----- Radii / shadow ----- */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 34px;
+  --shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.7);
+
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, sans-serif;
+}
+
+/* ============================================================
+   Light theme — "daytime sky" for a bright hall / daylight
+   ============================================================ */
+.theme-light {
+  --space-0: #e8eefb;
+  --space-1: #eef3ff;
+  --space-2: #ffffff;
+  --space-3: #ffffff;
+
+  --ink: #15234a;
+  --ink-dim: #3f4f7d;
+  --ink-mute: #8190b6;
+
+  --str-deep: #c98a00;
+  --wek-deep: #7a45d8;
+  --opp-deep: #0e9e86;
+  --thr-deep: #e0492f;
+
+  --glass: rgba(255, 255, 255, 0.74);
+  --glass-brd: rgba(30, 60, 130, 0.16);
+  --glass-hi: rgba(255, 255, 255, 0.9);
+
+  --chip-base: rgba(255, 255, 255, 0.94);
+  --surface: rgba(30, 60, 130, 0.06);
+  --surface-2: rgba(30, 60, 130, 0.1);
+  --bar-bg: rgba(244, 248, 255, 0.82);
+  --title-grad: linear-gradient(180deg, #16306a, #3f6bb5);
+  --hairline: rgba(30, 60, 130, 0.12);
+  --shadow: 0 24px 60px -22px rgba(40, 70, 140, 0.35);
+}
