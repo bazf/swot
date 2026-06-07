@@ -1,7 +1,7 @@
 /* useDemoMission — local in-memory simulation (no Firebase, no AI). */
 
 import { useCallback, useReducer } from 'react';
-import { FINAL_REPORT, SAMPLE_CLUSTERS, STAR_MAP } from '../data/catalog';
+import { FINAL_REPORT, SAMPLE_CLUSTERS, STAR_MAP, THRESHOLD } from '../data/catalog';
 import { initialState, missionReducer } from './machine';
 import { makeIdea, seedCollecting, seedCritical } from './sim';
 import type { CategoryKey, Idea, MissionApi, Phase } from './types';
@@ -33,7 +33,7 @@ export function useDemoMission(): MissionApi {
         case 'collecting':
           return dispatch({ type: 'seed', phase: 'collecting', ideas: seedCollecting(), count: 8 });
         case 'critical':
-          return dispatch({ type: 'seed', phase: 'critical', ideas: seedCritical(), count: 40 });
+          return dispatch({ type: 'seed', phase: 'critical', ideas: seedCritical(), count: THRESHOLD });
         case 'clusters':
           return dispatch({
             type: 'seed',

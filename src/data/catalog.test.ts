@@ -20,7 +20,7 @@ describe('catalog', () => {
     });
   });
 
-  it('THRESHOLD is 40 (brief)', () => expect(THRESHOLD).toBe(40));
+  it('THRESHOLD is 50', () => expect(THRESHOLD).toBe(50));
 
   it('FINAL_REPORT has priorities, recommendations, summary and a conclusion', () => {
     expect(FINAL_REPORT.priorities).toHaveLength(3);

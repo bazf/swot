@@ -1,7 +1,7 @@
 /* Quadrant — one SWOT constellation hugged into a board corner. */
 
 import type { CSSProperties } from 'react';
-import { CATS } from '../../data/catalog';
+import { CATS, MAX_PLANETS } from '../../data/catalog';
 import type { CategoryKey, StarPlanet } from '../../state/types';
 import { CategoryOrb, Constellation, Draggable, Planet } from '../cosmos';
 
@@ -32,8 +32,10 @@ export function Quadrant({ cat, planets, corner }: QuadrantProps) {
   const c = CATS[cat];
   const topHeader = corner === 'tl' || corner === 'tr';
   const rightAlign = corner === 'tr' || corner === 'br';
-  const n = Math.min(3, planets.length);
-  const coords = (LAYOUTS[corner][n] || LAYOUTS[corner][3]).slice(0, planets.length);
+  // Cap to the layouts we actually have coordinates for, so we never index past `coords`.
+  const shown = planets.slice(0, MAX_PLANETS);
+  const n = shown.length;
+  const coords = (LAYOUTS[corner][n] || LAYOUTS[corner][3]).slice(0, n);
   const pts = coords.map(([x, y]) => ({ x, y }));
   const vEdge = topHeader ? 'top' : 'bottom';
   const badge = <CategoryOrb cat={cat} size={30} fontSize={15} boxShadow={`0 0 14px rgba(${c.glow},.6)`} />;
@@ -68,7 +70,7 @@ export function Quadrant({ cat, planets, corner }: QuadrantProps) {
       {/* field with lines + planets */}
       <div style={{ position: 'absolute', left: 0, width: 380, height: 220, [vEdge]: 44 } as CSSProperties}>
         <Constellation points={pts} glow={c.glow} />
-        {planets.map((pl, i) => (
+        {shown.map((pl, i) => (
           <Draggable
             key={i}
             style={{ position: 'absolute', left: coords[i][0], top: coords[i][1] }}

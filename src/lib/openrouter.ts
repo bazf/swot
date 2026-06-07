@@ -3,7 +3,7 @@
    Only the master (board) calls these (the brief's rate-limit guard). Every call
    degrades gracefully to the sample data so a live педрада never hard-fails. */
 
-import { CAT_ORDER, FINAL_REPORT, SAMPLE_CLUSTERS, STAR_MAP } from '../data/catalog';
+import { CAT_ORDER, FINAL_REPORT, MAX_PLANETS, SAMPLE_CLUSTERS, STAR_MAP } from '../data/catalog';
 import type {
   CategoryKey,
   Cluster,
@@ -139,7 +139,8 @@ function validPlanets(raw: unknown): StarPlanet[] {
       percentage: Math.max(0, Math.min(100, Number(o.percentage) || 0)),
     });
   }
-  return out;
+  // The star-map/report layout only has room for MAX_PLANETS per quadrant.
+  return out.slice(0, MAX_PLANETS);
 }
 
 function validFinal(raw: unknown): MissionFinalReport | null {
