@@ -2,7 +2,7 @@
    (The finale is rendered by StarMap.) */
 
 import type { CategoryKey, Cluster, Idea, Phase } from '../../state/types';
-import { Asteroid, Draggable, GalaxyCore, Planet, Starfield } from '../cosmos';
+import { Asteroid, Draggable, GalaxyCore, Planet, Starfield, StarBirth, glowForId } from '../cosmos';
 import { BoardHUD } from './BoardHUD';
 import { BoardZones } from './BoardZones';
 import { CriticalBanner } from './CriticalBanner';
@@ -16,7 +16,6 @@ interface MultiboardProps {
   count: number;
   cycle: number;
   clusters: Cluster[];
-  link: string;
   /** The finale is being synthesized → show the big board indicator. */
   finalizing?: boolean;
   onStart: () => void;
@@ -24,7 +23,7 @@ interface MultiboardProps {
   onAssign: (idea: Idea, cat: CategoryKey) => void;
 }
 
-export function Multiboard({ phase, ideas, count, cycle, clusters, link, finalizing, onStart, onSwipe, onAssign }: MultiboardProps) {
+export function Multiboard({ phase, ideas, count, cycle, clusters, finalizing, onStart, onSwipe, onAssign }: MultiboardProps) {
   const crit = phase === 'critical';
   const showCore = phase === 'collecting' || phase === 'critical';
   const showIdeas = phase === 'collecting' || phase === 'critical';
@@ -33,7 +32,7 @@ export function Multiboard({ phase, ideas, count, cycle, clusters, link, finaliz
       <div className="cosmos-bg" />
       <Starfield count={110} />
 
-      {phase === 'start' && <StartScreen onStart={onStart} link={link} />}
+      {phase === 'start' && <StartScreen onStart={onStart} />}
 
       {phase !== 'start' && phase !== 'starmap' && <BoardHUD phase={phase} count={count} cycle={cycle} />}
 
@@ -48,10 +47,14 @@ export function Multiboard({ phase, ideas, count, cycle, clusters, link, finaliz
           >
             <div
               style={{
-                animation: `asteroid-in .6s ease ${it.delay}s both, float-soft ${it.fl}s ease-in-out ${it.delay}s infinite`,
+                position: 'relative',
+                animation: `float-soft ${it.fl}s ease-in-out ${0.9 + it.delay}s infinite`,
               }}
             >
-              <Asteroid cat={it.cat} text={it.text} />
+              <StarBirth glow={glowForId(it.id)} delay={it.delay} />
+              <div style={{ animation: `idea-birth 1.05s cubic-bezier(.2,.7,.3,1.15) ${it.delay}s both` }}>
+                <Asteroid cat={it.cat} text={it.text} />
+              </div>
             </div>
           </Draggable>
         ))}

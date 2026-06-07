@@ -1,0 +1,144 @@
+/* ============================================================
+   Народження зірки (Star Birth) — анімація появи думки.
+   Self-contained module: only these classes + keyframes.
+   Usage: a position:relative wrapper, inside it a
+   <span class="starbirth" style="--g: R,G,B"> with the layers
+   (see StarBirth.tsx); the chip itself animates via `idea-birth`.
+   --g — glow color as an "R,G,B" triple.
+   ============================================================ */
+
+/* The chip condenses out of the flash. */
+@keyframes idea-birth {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+    filter: blur(9px) brightness(2.8);
+  }
+  38% {
+    opacity: 0;
+  }
+  62% {
+    transform: scale(1.14);
+    opacity: 1;
+    filter: blur(0) brightness(1.7);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0) brightness(1);
+  }
+}
+
+.starbirth {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.starbirth > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+/* Blinding spark-core */
+.sb-core {
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #fff 18%, rgba(var(--g), 0.95) 40%, rgba(var(--g), 0) 72%);
+  box-shadow: 0 0 36px 12px rgba(var(--g), 0.7), 0 0 90px 30px rgba(var(--g), 0.35);
+  animation: sb-core 0.85s ease-out both;
+}
+@keyframes sb-core {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+  18% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Light-flare rays (8 spokes) */
+.sb-rays {
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(var(--g), 0.65) 0deg 2.4deg, transparent 2.4deg 45deg);
+  -webkit-mask: radial-gradient(circle, transparent 9%, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 72%);
+  mask: radial-gradient(circle, transparent 9%, #000 26%, rgba(0, 0, 0, 0.5) 52%, transparent 72%);
+  animation: sb-rays 0.9s ease-out both;
+}
+@keyframes sb-rays {
+  0% {
+    transform: scale(0.15) rotate(-25deg);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(2.7) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* Shockwave rings */
+.sb-shock {
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(var(--g), 0.9);
+  box-shadow: 0 0 14px rgba(var(--g), 0.6);
+  animation: sb-shock 1s cubic-bezier(0.1, 0.6, 0.25, 1) both;
+}
+.sb-shock2 {
+  border-color: rgba(255, 255, 255, 0.85);
+  border-width: 1.5px;
+}
+@keyframes sb-shock {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Ejected sparks */
+.sb-spark {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 7px 2px rgba(var(--g), 0.95);
+  animation: sb-spark 0.95s ease-out both;
+}
+@keyframes sb-spark {
+  0% {
+    transform: rotate(var(--a)) translateX(4px) scale(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--a)) translateX(78px) scale(0.2);
+    opacity: 0;
+  }
+}
