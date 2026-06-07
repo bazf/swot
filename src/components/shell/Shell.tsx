@@ -85,6 +85,7 @@ export function Shell() {
                   count={m.count}
                   cycle={m.cycle}
                   clusters={m.clusters}
+                  finalizing={m.finalizing}
                   onStart={m.start}
                   onSwipe={m.swipe}
                   onAssign={m.assignCategory}

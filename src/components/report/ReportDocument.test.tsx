@@ -18,4 +18,16 @@ describe('ReportDocument', () => {
     FINAL_REPORT.recommendations!.forEach((r) => expect(screen.getByText(r)).toBeInTheDocument());
     expect(screen.getByText(/Команда вчителів — головна сила/)).toBeInTheDocument();
   });
+
+  it('renders the vote statistics (totals + similar votes) when present', () => {
+    render(<ReportDocument map={STAR_MAP} report={FINAL_REPORT} />);
+    expect(screen.getByText('Статистика голосів')).toBeInTheDocument();
+    expect(screen.getByText(/Зібрано думок:/)).toBeInTheDocument();
+    expect(screen.getByText(`×${FINAL_REPORT.stats!.themes[0].count}`)).toBeInTheDocument();
+  });
+
+  it('omits the statistics block when no stats were counted', () => {
+    render(<ReportDocument map={STAR_MAP} report={{ ...FINAL_REPORT, stats: undefined }} />);
+    expect(screen.queryByText('Статистика голосів')).not.toBeInTheDocument();
+  });
 });
