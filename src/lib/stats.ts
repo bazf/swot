@@ -64,11 +64,15 @@ export function computeVoteStats(messages: ReadonlyArray<Votable>): VoteStats {
 
   const themes: VoteTheme[] = [...groups.values()]
     .filter((g) => g.count >= 2) // "similar votes" = a thought several people shared
-    .map((g) => ({
-      text: topKey(g.originals) ?? '',
-      count: g.count,
-      cat: g.cats.size ? topKey(g.cats) : undefined,
-    }))
+    .map((g) => {
+      // Omit `cat` entirely when none of the merged thoughts were sorted into a zone.
+      // A literal `undefined` here would crash the Firebase `set()` of the final report
+      // ("value argument contains undefined in property … themes.N.cat").
+      const theme: VoteTheme = { text: topKey(g.originals) ?? '', count: g.count };
+      const cat = g.cats.size ? topKey(g.cats) : undefined;
+      if (cat) theme.cat = cat;
+      return theme;
+    })
     .sort((a, b) => b.count - a.count)
     .slice(0, 6);
 

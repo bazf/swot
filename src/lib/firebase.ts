@@ -73,6 +73,21 @@ function toClusters(value: unknown): Cluster[] {
   return [];
 }
 
+/** Firebase's `set()` rejects any `undefined` leaf ("value argument contains undefined
+   in property …"). Drop such keys recursively so the final report's optional fields —
+   an unsorted theme's `cat`, a missing `summary`, absent `stats` — serialize cleanly. */
+export function stripUndefined<T>(value: T): T {
+  if (Array.isArray(value)) return value.map((v) => stripUndefined(v)) as unknown as T;
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (v !== undefined) out[k] = stripUndefined(v);
+    }
+    return out as T;
+  }
+  return value;
+}
+
 export function createFirebaseService(config: AppConfig, sessionId: string): MissionService {
   const app: FirebaseApp = getApps().length ? getApp() : initializeApp(config.firebase);
   const db: Database = getDatabase(app, config.firebase.databaseURL);
@@ -103,7 +118,7 @@ export function createFirebaseService(config: AppConfig, sessionId: string): Mis
       await set(clustersRef, clusters);
     },
     setFinalReport: async (report) => {
-      await set(finalRef, report);
+      await set(finalRef, stripUndefined(report));
     },
     getMessagesOnce: async () => snapToMessages(await get(messagesRef)),
     clearMessages: async () => {
