@@ -25,9 +25,10 @@ Weaknesses · 🪐 **Нові планети** = Opportunities · ☄ **Мете
 
 The same static site behaves differently depending on configuration:
 
-- **Demo (default)** — no secrets configured. Runs a fully local simulation: board ⇄
-  phone preview, a Director control panel, sample data and auto-fill. This is what the
-  public site and the e2e tests run. No Firebase, no AI.
+- **Demo** — a fully local simulation: board ⇄ phone preview, a Director control panel,
+  sample data and auto-fill. No Firebase, no AI. It's the default when no config is
+  committed, and is always reachable at **`?demo=1`** (the public showcase URL, also
+  what the e2e tests drive) even after a live config blob is committed.
 - **Live** — once an encrypted config blob is committed and the URL carries the key
   (`#key=…`), the app connects to **Firebase Realtime Database** and **OpenRouter**:
   - `?role=board` → the **Master** multiboard (drives phases, calls the AI, narrates).

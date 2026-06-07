@@ -45,4 +45,10 @@ describe('resolveConfig', () => {
     expect(r.mode).toBe('live');
     expect(r.fromHashKey).toBe(false);
   });
+
+  it('forces demo mode with ?demo=1 even when a ciphertext is committed', () => {
+    const ct = encryptJson(cfg, 'pw');
+    const r = resolveConfig({ encrypted: ct, hash: '#key=pw', search: '?demo=1', env: {} });
+    expect(r.mode).toBe('demo');
+  });
 });

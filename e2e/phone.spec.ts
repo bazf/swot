@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
       this.text = t;
     };
   });
-  await page.goto('/swot/');
+  await page.goto('/swot/?demo=1');
   await page.getByRole('button', { name: /Телефон/ }).click();
 });
 

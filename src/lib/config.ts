@@ -78,6 +78,13 @@ export function resolveConfig(input: ResolveInput = {}): Resolution {
   const env = input.env ?? import.meta.env;
   const role = readRole(search, hash);
 
+  // 0. Explicit demo override (public showcase / e2e) — always offline, no secrets,
+  //    even when a production ciphertext is committed.
+  const demoParam = new URLSearchParams(search).get('demo');
+  if (demoParam === '1' || demoParam === 'true') {
+    return { mode: 'demo', config: null, role, sessionId: DEFAULT_SESSION_ID, fromHashKey: false };
+  }
+
   // 1. Local developer live mode (env-driven) — never scrubs the hash.
   const envCfg = readEnvConfig(env);
   if (envCfg) {

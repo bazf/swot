@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
       this.text = t;
     };
   });
-  await page.goto('/swot/');
+  await page.goto('/swot/?demo=1');
 });
 
 test('renders the start screen', async ({ page }) => {

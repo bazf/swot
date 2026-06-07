@@ -19,6 +19,7 @@ export function Planet({ cat, title, emoji, percentage, size = 132, showLabel = 
   const ringDeg = Math.round((percentage / 100) * 360);
   return (
     <div
+      className="planet"
       style={{
         display: 'flex',
         flexDirection: 'column',
