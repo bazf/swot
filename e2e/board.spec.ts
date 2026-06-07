@@ -28,3 +28,12 @@ test('moderator colorizes stardust by dragging it into a zone', async ({ page })
   // At least one stardust asteroid has gained a category colour.
   expect(after.join('|')).not.toBe(before.join('|'));
 });
+
+test('the board background music can be muted', async ({ page }) => {
+  await page.goto('/swot/?demo=1');
+  const mute = page.getByRole('button', { name: 'Музика' });
+  await expect(mute).toBeVisible();
+  await expect(mute).toHaveAttribute('aria-pressed', 'false');
+  await mute.click();
+  await expect(mute).toHaveAttribute('aria-pressed', 'true');
+});

@@ -22,9 +22,11 @@ describe('catalog', () => {
 
   it('THRESHOLD is 40 (brief)', () => expect(THRESHOLD).toBe(40));
 
-  it('FINAL_REPORT has 3 priorities and a conclusion', () => {
+  it('FINAL_REPORT has priorities, recommendations, summary and a conclusion', () => {
     expect(FINAL_REPORT.priorities).toHaveLength(3);
     expect(FINAL_REPORT.conclusion.length).toBeGreaterThan(0);
+    expect(FINAL_REPORT.recommendations?.length).toBeGreaterThan(0);
+    expect((FINAL_REPORT.summary ?? '').length).toBeGreaterThan(0);
   });
 
   it('sample clusters reference valid categories', () => {

@@ -1,6 +1,6 @@
 /* useDemoMission — local in-memory simulation (no Firebase, no AI). */
 
-import { useCallback, useMemo, useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { FINAL_REPORT, SAMPLE_CLUSTERS, STAR_MAP } from '../data/catalog';
 import { initialState, missionReducer } from './machine';
 import { makeIdea, seedCollecting, seedCritical } from './sim';
@@ -51,13 +51,7 @@ export function useDemoMission(): MissionApi {
   );
 
   const map = state.finalReport?.map ?? STAR_MAP;
-  const report = useMemo(
-    () =>
-      state.finalReport
-        ? { priorities: state.finalReport.priorities, conclusion: state.finalReport.conclusion }
-        : FINAL_REPORT,
-    [state.finalReport],
-  );
+  const report = state.finalReport ?? FINAL_REPORT;
 
   return {
     phase: state.phase,

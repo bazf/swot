@@ -4,6 +4,7 @@ import { Fragment } from 'react';
 import logo from '../../assets/logo.png';
 import type { Phase, View } from '../../state/types';
 import type { Theme } from '../../state/useTheme';
+import { MuteButton } from '../common/MuteButton';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { PHASES } from './phases';
 
@@ -14,9 +15,11 @@ interface TopbarProps {
   jump: (phase: Phase) => void;
   theme: Theme;
   setTheme: (t: Theme) => void;
+  muted: boolean;
+  onToggleMute: () => void;
 }
 
-export function Topbar({ phase, view, setView, jump, theme, setTheme }: TopbarProps) {
+export function Topbar({ phase, view, setView, jump, theme, setTheme, muted, onToggleMute }: TopbarProps) {
   const activeIndex = PHASES.findIndex((x) => x.key === phase);
   return (
     <div
@@ -95,6 +98,7 @@ export function Topbar({ phase, view, setView, jump, theme, setTheme }: TopbarPr
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <MuteButton muted={muted} onToggle={onToggleMute} />
         <ThemeToggle theme={theme} onToggle={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
 
         <div style={{ display: 'flex', gap: 4, padding: 4, borderRadius: 999, background: 'var(--surface)', border: '1px solid var(--glass-brd)' }}>

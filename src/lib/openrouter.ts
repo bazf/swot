@@ -158,7 +158,17 @@ function validFinal(raw: unknown): MissionFinalReport | null {
     : [];
   const conclusion = typeof o.conclusion === 'string' ? o.conclusion : '';
   if (priorities.length === 0 || !conclusion) return null;
-  return { map, priorities, conclusion };
+  const recommendations = Array.isArray(o.recommendations)
+    ? (o.recommendations as unknown[]).filter((p): p is string => typeof p === 'string').slice(0, 6)
+    : [];
+  const summary = typeof o.summary === 'string' ? o.summary : '';
+  return {
+    map,
+    priorities,
+    conclusion,
+    recommendations: recommendations.length ? recommendations : FINAL_REPORT.recommendations ?? [],
+    summary: summary || FINAL_REPORT.summary || conclusion,
+  };
 }
 
 /** The brief's final prompt — build the SWOT map + TOP-3 + spoken conclusion. */
@@ -169,12 +179,14 @@ export function finalPrompt(clusters: Cluster[]): string {
   return (
     'Проаналізуй усі зібрані думки та кластери педагогічної ради. ' +
     'Якщо якась думка не має категорії — самостійно признач їй правильний квадрант SWOT. ' +
-    'Створи класичний SWOT: 4 списки (по 2–3 планети) за категоріями str/wek/opp/thr. ' +
+    'Створи деталізований SWOT-звіт: для кожної категорії str/wek/opp/thr — 2–3 планети (пункти). ' +
     'Визнач ТОП-3 пріоритети на наступний рік. ' +
-    'Напиши одне коротке речення-висновок для озвучення роботом (без спецсимволів та емодзі). ' +
+    'Додай 3–5 конкретних практичних рекомендацій (recommendations) — що саме зробити команді. ' +
+    'Напиши розгорнутий підсумок на 2–3 речення (summary) для письмового звіту. ' +
+    'Напиши також одне коротке речення-висновок (conclusion) для озвучення роботом (без спецсимволів та емодзі). ' +
     'Поверни СУВОРИЙ JSON без пояснень у форматі: ' +
     '{"map":{"str":[{"title":"","emoji":"⭐","percentage":40}],"wek":[],"opp":[],"thr":[]},' +
-    '"priorities":["","",""],"conclusion":""}.\n\nКластери:\n' +
+    '"priorities":["","",""],"recommendations":["",""],"summary":"","conclusion":""}.\n\nКластери:\n' +
     lines
   );
 }

@@ -149,10 +149,7 @@ export function useLiveMission(service: MissionService, role: Role, orOpts: Open
   }, [service]);
 
   const map = finalReport?.map ?? STAR_MAP;
-  const report = useMemo(
-    () => (finalReport ? { priorities: finalReport.priorities, conclusion: finalReport.conclusion } : FINAL_REPORT),
-    [finalReport],
-  );
+  const report = finalReport ?? FINAL_REPORT;
 
   return {
     phase,

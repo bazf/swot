@@ -23,6 +23,8 @@ describe('useDemoMission', () => {
     act(() => result.current.finish());
     expect(result.current.phase).toBe('starmap');
     expect(result.current.report.priorities).toHaveLength(3);
+    expect(result.current.report.recommendations?.length).toBeGreaterThan(0);
+    expect(result.current.report.summary).toBeTruthy();
   });
 
   it('jumps straight to a phase via the stepper', () => {

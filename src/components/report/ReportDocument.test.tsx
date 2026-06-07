@@ -11,4 +11,11 @@ describe('ReportDocument', () => {
     expect(screen.getByText('Загрози')).toBeInTheDocument();
     FINAL_REPORT.priorities.forEach((p) => expect(screen.getByText(p)).toBeInTheDocument());
   });
+
+  it('renders the recommendations and the written summary', () => {
+    render(<ReportDocument map={STAR_MAP} report={FINAL_REPORT} />);
+    expect(screen.getByText('Рекомендації')).toBeInTheDocument();
+    FINAL_REPORT.recommendations!.forEach((r) => expect(screen.getByText(r)).toBeInTheDocument());
+    expect(screen.getByText(/Команда вчителів — головна сила/)).toBeInTheDocument();
+  });
 });

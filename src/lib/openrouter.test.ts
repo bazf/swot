@@ -45,6 +45,20 @@ describe('finalAnalysis', () => {
     const r = await finalAnalysis(clusters, { key: 'k', fetchImpl: fakeFetch(content) });
     expect(r.conclusion).toBe('Готово');
     expect(r.map.str[0].title).toBe('A');
+    expect(r.recommendations?.length).toBeGreaterThan(0); // filled from fallback when absent
+  });
+
+  it('parses recommendations and summary when provided', async () => {
+    const content = JSON.stringify({
+      map: { str: [{ title: 'A', emoji: '⭐', percentage: 40 }], wek: [], opp: [], thr: [] },
+      priorities: ['p1', 'p2', 'p3'],
+      recommendations: ['зробити X', 'зробити Y'],
+      summary: 'Розгорнутий підсумок звіту.',
+      conclusion: 'Готово',
+    });
+    const r = await finalAnalysis(clusters, { key: 'k', fetchImpl: fakeFetch(content) });
+    expect(r.recommendations).toEqual(['зробити X', 'зробити Y']);
+    expect(r.summary).toBe('Розгорнутий підсумок звіту.');
   });
 });
 
@@ -54,9 +68,11 @@ describe('prompts', () => {
     expect(p).toContain('percentage');
     expect(p).toContain('Сильна команда');
   });
-  it('final prompt asks for SWOT priorities + conclusion', () => {
+  it('final prompt asks for priorities, recommendations, summary and conclusion', () => {
     const p = finalPrompt(clusters);
     expect(p).toContain('priorities');
+    expect(p).toContain('recommendations');
+    expect(p).toContain('summary');
     expect(p).toContain('conclusion');
   });
 });

@@ -2,7 +2,9 @@
    Director controls, theme toggle and the report overlay. */
 
 import { useEffect, useRef, useState } from 'react';
+import orbitalDrift from '../../assets/audio/orbital-drift.mp3';
 import { LINK } from '../../data/catalog';
+import { useBackgroundMusic } from '../../state/useBackgroundMusic';
 import { useDemoMission } from '../../state/useDemoMission';
 import type { Phase, View } from '../../state/types';
 import { useTheme } from '../../state/useTheme';
@@ -27,6 +29,7 @@ export function Shell() {
   const { phase, addIdea } = m;
   const [view, setView] = useState<View>('board');
   const { theme, setTheme } = useTheme('dark');
+  const { muted, toggle: toggleMute } = useBackgroundMusic(orbitalDrift, m.phase !== 'start');
   const [report, setReport] = useState(false);
   const [auto, setAuto] = useState(false);
   const autoRef = useRef<number | null>(null);
@@ -59,7 +62,16 @@ export function Shell() {
       style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column' }}
     >
       <div className="cosmos-bg" style={{ opacity: 0.5 }} />
-      <Topbar phase={m.phase} view={view} setView={setView} jump={jump} theme={theme} setTheme={setTheme} />
+      <Topbar
+        phase={m.phase}
+        view={view}
+        setView={setView}
+        jump={jump}
+        theme={theme}
+        setTheme={setTheme}
+        muted={muted}
+        onToggleMute={toggleMute}
+      />
 
       <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
         {view === 'board' ? (

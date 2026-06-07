@@ -61,10 +61,14 @@ export interface StarPlanet {
 /** Final star map: planets per SWOT quadrant. */
 export type SwotMap = Record<CategoryKey, StarPlanet[]>;
 
-/** TOP-3 priorities + the spoken AI conclusion. */
+/** Priorities, recommendations, a written summary + the spoken AI conclusion. */
 export interface FinalReport {
   priorities: string[];
   conclusion: string;
+  /** Actionable recommendations rendered in the written report. */
+  recommendations?: string[];
+  /** A fuller written summary for the report (the spoken `conclusion` stays short). */
+  summary?: string;
 }
 
 /** Combined finale payload persisted to Firebase `/final_report`. */

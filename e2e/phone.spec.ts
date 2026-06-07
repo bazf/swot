@@ -33,3 +33,15 @@ test('shows the downloadable report preview at the finale', async ({ page }) => 
   await page.getByRole('button', { name: /Завантажити SWOT-звіт/ }).click();
   await expect(page.getByText('SWOT-аналіз навчального року · Педагогічна рада')).toBeVisible();
 });
+
+test('the report fits a narrow phone screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByTitle('Зоряна карта').click();
+  await page.getByRole('button', { name: /Завантажити SWOT-звіт/ }).click();
+  const doc = page.locator('.report-doc');
+  await expect(doc).toBeVisible();
+  const box = await doc.boundingBox();
+  expect(box).not.toBeNull();
+  // The scaled document must not exceed the viewport width.
+  expect(box!.width).toBeLessThanOrEqual(390);
+});

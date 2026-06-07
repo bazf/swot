@@ -2,8 +2,10 @@
    launch it to space. The AI categorizes later, so there's no zone picker. */
 
 import { useEffect, useRef, useState } from 'react';
+import launchSound from '../../assets/audio/launching-missile.mp3';
 import logo from '../../assets/logo.png';
 import { randomSuggestions } from '../../data/suggestions';
+import { playOneShot } from '../../lib/audio';
 
 const IDLE_MS = 6000;
 
@@ -35,6 +37,7 @@ export function InputForm({ onSubmit }: InputFormProps) {
 
   const submit = () => {
     if (!ready) return;
+    playOneShot(launchSound, 0.7);
     onSubmit?.(text.trim());
     setSent((s) => s + 1);
     setText('');

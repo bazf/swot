@@ -13,6 +13,7 @@ export function ReportDocument({ map, report }: ReportDocumentProps) {
   const today = new Date().toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <div
+      className="report-doc"
       style={{
         width: 520,
         background: '#fff',
@@ -98,6 +99,33 @@ export function ReportDocument({ map, report }: ReportDocumentProps) {
           ))}
         </div>
 
+        {report.recommendations && report.recommendations.length > 0 && (
+          <>
+            <div
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: 13,
+                color: 'var(--navy)',
+                marginBottom: 10,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+              }}
+            >
+              <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--opp)', display: 'inline-block' }} />
+              Рекомендації
+            </div>
+            <ul style={{ margin: '0 0 18px', padding: '0 0 0 22px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {report.recommendations.map((r, i) => (
+                <li key={i} style={{ fontSize: 11.5, color: '#2a2f45', lineHeight: 1.4 }}>
+                  {r}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
         <div style={{ padding: '12px 14px', borderRadius: 8, background: '#fbf6e8', border: '1px solid #f0e2bf' }}>
           <div
             style={{
@@ -112,8 +140,7 @@ export function ReportDocument({ map, report }: ReportDocumentProps) {
             Висновок бортового ШІ
           </div>
           <div style={{ fontSize: 11.5, color: '#5a4a1a', lineHeight: 1.5, fontStyle: 'italic' }}>
-            «Бажаємо успішного польоту, екіпаж! Команда — наша головна зірка, а оновлена інфраструктура та гранти
-            відкривають нові орбіти розвитку.»
+            «{report.summary || report.conclusion}»
           </div>
         </div>
       </div>

@@ -1,11 +1,14 @@
 /* LiveBoard — the Master multiboard, driven by Firebase + OpenRouter. */
 
+import orbitalDrift from '../../assets/audio/orbital-drift.mp3';
 import { LINK } from '../../data/catalog';
 import type { MissionService } from '../../lib/firebase';
 import type { OpenRouterOptions } from '../../lib/openrouter';
+import { useBackgroundMusic } from '../../state/useBackgroundMusic';
 import { useLiveMission } from '../../state/useLiveMission';
 import { themeClass, useTheme } from '../../state/useTheme';
 import { Multiboard } from '../board';
+import { MuteButton } from '../common/MuteButton';
 import { ThemeToggle } from '../common/ThemeToggle';
 import { Director } from '../shell/Director';
 import { FitStage } from '../shell/FitStage';
@@ -19,10 +22,14 @@ interface LiveBoardProps {
 export function LiveBoard({ service, orOpts }: LiveBoardProps) {
   const m = useLiveMission(service, 'board', orOpts);
   const { theme, toggle } = useTheme('dark');
+  const { muted, toggle: toggleMute } = useBackgroundMusic(orbitalDrift, m.phase !== 'start');
   return (
     <div className={themeClass(theme)} style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column' }}>
       <div className="cosmos-bg" style={{ opacity: 0.5 }} />
-      <ThemeToggle theme={theme} onToggle={toggle} style={{ position: 'absolute', top: 14, right: 18, zIndex: 60 }} />
+      <div style={{ position: 'absolute', top: 14, right: 18, zIndex: 60, display: 'flex', gap: 10 }}>
+        <MuteButton muted={muted} onToggle={toggleMute} />
+        <ThemeToggle theme={theme} onToggle={toggle} />
+      </div>
       <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
         <FitStage w={1280} h={720}>
           <div
