@@ -66,7 +66,7 @@ export function Director(p: DirectorProps) {
           Режисер
         </span>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 12, color: 'var(--gold-soft)' }}>
-          Оксана
+          Оксана Патик
         </span>
       </div>
 
